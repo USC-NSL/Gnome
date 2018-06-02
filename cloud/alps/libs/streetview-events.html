@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Street View events</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      #pano {
+        width: 50%;
+        height: 100%;
+        float: left;
+      }
+      #floating-panel {
+        width: 45%;
+        height: 100%;
+        float: right;
+        text-align: left;
+        overflow: auto;
+        position: static;
+        border: 0px solid #999;
+      }
+    </style>
+    <script src="gmapapi.js"></script>
+  </head>
+  <body>
+    <div id="pano"></div>
+    <div id="floating-panel">
+    <table>
+      <tr>
+        <td><b>Position</b></td><td id="position-cell">&nbsp;</td>
+      </tr>
+      <tr>
+        <td><b>POV Heading</b></td><td id="heading-cell">270</td>
+      </tr>
+      <tr>
+        <td><b>POV Pitch</b></td><td id="pitch-cell">0.0</td>
+      </tr>
+      <tr>
+        <td><b>Pano ID</b></td><td id="pano-cell">&nbsp;</td>
+      </tr>
+      <table id="links_table"></table>
+    </table>
+    </div>
+    <script>
+    function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+      }
+      function initPano() {
+        //console.log(getURLParameter('lat'));
+
+        var panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('pano'), {
+              //position: {lat: 37.869260, lng: -122.254811},
+              //position:{lat:34.025540, lng:-118.291565 },
+
+              position:{lat:parseFloat(getURLParameter('lat')), lng:parseFloat(getURLParameter('lng')) },
+              //34.0254404, -118.29159529999998
+              pov: {
+                heading: 270,
+                pitch: 0
+              },
+              visible: true
+        });
+        console.log(panorama.getPosition());
+        panorama.addListener('pano_changed', function() {
+            var panoCell = document.getElementById('pano-cell');
+            panoCell.innerHTML = panorama.getPano();
+            console.log(panorama.getPosition());
+            //panoCell.innerHTML = panorama.getPosition();
+        });
+
+        panorama.addListener('links_changed', function() {
+            var linksTable = document.getElementById('links_table');
+            while (linksTable.hasChildNodes()) {
+              linksTable.removeChild(linksTable.lastChild);
+            }
+            var links = panorama.getLinks();
+            for (var i in links) {
+              var row = document.createElement('tr');
+              linksTable.appendChild(row);
+              var labelCell = document.createElement('td');
+              labelCell.innerHTML = '<b>Link: ' + i + '</b>';
+              var valueCell = document.createElement('td');
+              valueCell.innerHTML = links[i].description;
+              linksTable.appendChild(labelCell);
+              linksTable.appendChild(valueCell);
+            }
+        });
+
+        panorama.addListener('position_changed', function() {
+            var positionCell = document.getElementById('position-cell');
+            positionCell.firstChild.nodeValue = panorama.getPosition() + '';
+        });
+
+        panorama.addListener('pov_changed', function() {
+            var headingCell = document.getElementById('heading-cell');
+            var pitchCell = document.getElementById('pitch-cell');
+            headingCell.firstChild.nodeValue = panorama.getPov().heading + '';
+            pitchCell.firstChild.nodeValue = panorama.getPov().pitch + '';
+        });
+      }
+    </script>
+    <script
+        src="initPano.js"
+        async defer>
+    </script>
+  </body>
+</html>
