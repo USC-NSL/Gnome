@@ -13,7 +13,7 @@ if __name__ == '__main__':
 	f_input = open(work_dir + "02.generate_standing_point_output.txt", "r")
 	f_hack = open(work_dir + "03.gps_hacking_output.txt", "r")
 	# f_output = open(work_dir + "04.adjust_standing_point_output.txt", "w")
-	f_output = open("viewpoints.txt", "w")
+	f_output = open("viewpoints.csv", "w")
 
 	way_index = 0
 

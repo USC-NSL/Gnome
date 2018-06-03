@@ -1,8 +1,12 @@
 import sys 
 import viewpoints
-# import model
-# import candidates
+import model
+import candidates
 # import path_inflation
+
+viewpoints_file = 'viewpoints.csv'
+model_file = 'models.csv'
+candidates_file = 'candidates.csv'
 
 if __name__ == '__main__':
 	if len(sys.argv) < 5:
@@ -10,11 +14,15 @@ if __name__ == '__main__':
 		sys.exit(0)
 
 	print('====== generating SV viewpoints ======')
-	viewpoints.run(map(float, sys.argv[1:]))
+	# viewpoints.run(map(float, sys.argv[1:]))
+
 	print('====== generating 3D model ======')
-	# model_path = model.run('viewpoints.txt')
+	# model.run(viewpoints_file)
+	
 	print('====== generating candidates ======')
-	# candidate_path = candidates.run(sv_viewpoints_path, model_path)
+	candidates.run(model_file)
+	
 	print('====== computing path inflation ======')
 	# path_inflation.run(candidate_path, model_path)
+	
 	print('done')

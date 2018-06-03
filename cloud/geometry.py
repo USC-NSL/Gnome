@@ -36,6 +36,7 @@ class Point3D:
 	def to_array(self):
 		return np.array([self.x, self.y, self.z])
 
+
 # extended point3D with azi and ele 
 class Voxel:
 	def __init__(self, azi_, ele_, pos_):
@@ -45,6 +46,7 @@ class Voxel:
 
 	def azi_ele(self):
 		return [self.azi, self.ele]
+
 
 # processed plane class 
 class Plane:
@@ -92,10 +94,10 @@ def relative_xy(origin, destination):
 
 # input the origin lat,lon and offset x,y, get the new lat,lon
 def xy2ll(origin, offset):
-	xy = utm.from_latlon(origin[0], origin[1])
-	xy[0] += offset[0]
-	xy[1] += offset[1]
-	return utm.to_latlon(xy[0], xy[1], xy[2], xy[3])
+	x, y, h, d = utm.from_latlon(float(origin[0]), float(origin[1]))
+	x += offset[0]
+	y += offset[1]
+	return utm.to_latlon(x, y, h, d)
 
 
 def b2i(data):	# one byte to int
