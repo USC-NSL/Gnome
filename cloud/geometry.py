@@ -113,6 +113,10 @@ def precision(f, n=1):	# fix the precision of float
 	return f - f % p
 
 
+def read_model(fpath):
+	return {1:1}		# TODO
+
+
 ###########################
 # x: points to east
 # y: points to north 

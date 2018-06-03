@@ -2,7 +2,7 @@ import sys
 import viewpoints
 import model
 import candidates
-# import path_inflation
+import path_inflation
 
 viewpoints_file = 'viewpoints.csv'
 model_file = 'models.csv'
@@ -20,9 +20,9 @@ if __name__ == '__main__':
 	# model.run(viewpoints_file)
 	
 	print('====== generating candidates ======')
-	candidates.run(model_file)
+	# candidates.run(model_file)
 	
 	print('====== computing path inflation ======')
-	# path_inflation.run(candidate_path, model_path)
+	path_inflation.run(candidates_file)
 	
 	print('done')

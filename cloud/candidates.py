@@ -31,10 +31,6 @@ def run(model_file):
 		print('%d: %s' % (cnt, raw_file))
 		cnt += 1
 
-		model_raw = open(raw_file).read().splitlines()[1]
-		voxels, planes = process_depth(model_raw)
-		hulls = convex_hull(voxels)
-
 		for r in range(-road_x, road_x, grid):
 			for w in range(-road_y, road_y, grid):
 				offset = gen_cand(r, w, direction)

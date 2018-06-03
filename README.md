@@ -30,5 +30,5 @@ while reading_gps:
 ```
 
 - `Gnome` is the main object to compute the new location. Use its `update` function to get new location reading
-- `GPSmeta` contains raw GPS measurement like C/N0, Pseudorange rate, clock, etc. Please read `mobile/meta.py` to check how to initiate GPSmeta. You can get the raw GPS measurement data from Android APIs in your app. For API details please read the source code of [Android GNSS Logger](https://github.com/google/gps-measurement-tools/tree/master/GNSSLogger). `GPSmeta` also enables you to initiate the meta object with the output file of Android GNSS logger. 
+- `GPSmeta` contains raw GPS measurement like C/N0, Pseudorange rate, clock, etc. Please read `mobile/meta.py` to check how to initiate GPSmeta. You can get the raw GPS measurement data from Android APIs in your app. For API details please read the source code of [Android GNSS Logger](https://github.com/google/gps-measurement-tools/tree/master/GNSSLogger). `GPSmeta` also enables you to initiate the meta object with the output file of Android GNSS logger. The Android version of Gnome mobile will come in future. 
 
