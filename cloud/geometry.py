@@ -1,10 +1,11 @@
 import numpy as np
 from math import *
+import math
 import struct
 import utm 
 
-TWO_PI = 6.2831853
-PI = 3.14159265
+TWO_PI = math.pi * 2
+PI = math.pi
 
 # plane class used in data exctraction 
 class DepthMapPlane:	# size = 16 bytes (4 floats)
@@ -113,8 +114,20 @@ def precision(f, n=1):	# fix the precision of float
 	return f - f % p
 
 
-def read_model(fpath):
-	return {1:1}		# TODO
+def ray_intersect(line, azi, origin=[0,0]):
+	# point: [x,y]
+	# line: [point, point]
+	pass		# TODO 
+
+
+def mirror_point(line, point):
+	# point: [x,y]
+	# line: [point, point]
+	pass		# TODO 
+
+
+def dist2d(p1, p2):
+	return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 
 ###########################
@@ -140,7 +153,7 @@ def to_azi_ele(x, y, z = 0):
 	return azi, ele
 
 
-def to_unit_xyz(azi, ele):
+def to_unit_xyz(azi, ele=0):
 	return 	np.cos(ele) * np.sin(azi), \
 			np.cos(ele) * np.cos(azi), \
 			np.sin(ele)

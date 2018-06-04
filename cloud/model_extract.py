@@ -39,7 +39,7 @@ IMG_MODE = MODES[0]
 
 URL = 'http://cbk0.google.com/cbk?output=xml&ll=%s&dm=1'
 
-MIN_SURFACE_SIZE = 120
+MIN_SURFACE_SIZE = 80
 WIDTH = 512
 HEIGHT = 256
 VERTICAL_THRES = 0.7
@@ -197,6 +197,63 @@ def raise_height(hull, height):		# for adjusting convext hull
 			line[0].ele -= height
 		if line[1].ele < 100.:
 			line[1].ele -= height
+
+
+def summarize_plane(voxels):
+	min_azi, max_azi = 999., -999.
+	min_point, max_point = None, None
+	max_height = -1
+
+	visited_azi = []
+	for v in voxels:
+		if v.azi < min_azi:
+			min_point = v
+			min_azi = v.azi
+		if v.azi > max_azi:
+			max_point = v
+			max_azi = v.azi
+		if v.pos.z > max_height:
+			max_height = v.pos.z
+		if not v.azi in visited_azi:
+			visited_azi.append(v.azi)
+
+	if min_azi == 0 and max_azi == WIDTH - 1:
+		print('Cross-image plane..')
+		min_point, max_point = None, None
+		
+		visited_azi.sort()
+		boundary_left = 0
+		boundary_right = 0
+		for i in range(len(visited_azi) - 1):
+			if visited_azi[i + 1] - visited_azi[i] > 10:
+				boundary_left = visited_azi[i]
+				boundary_right = visited_azi[i + 1]
+				break 
+
+		for v in voxels:
+			if v.azi == boundary_left:
+				max_point = v
+			if v.azi == boundary_right:
+				min_point = v
+			if min_point and max_point:
+				break 
+
+	edges = [[min_point.pos.x, min_point.pos.y],
+			[max_point.pos.x, max_point.pos.y]]
+
+	return edges, max_height + 2
+
+
+def read_model(fpath):
+	model_raw = open(fpath, 'r').read().splitlines()[1]
+	voxels, _ = process_depth(model_raw)
+	res = []
+	for pid in voxels:
+		if len(voxels[pid]) < MIN_SURFACE_SIZE:
+			continue
+		edges, height = summarize_plane(voxels[pid])
+		res[pid] = {'edges': edges, 'height': height}
+	return res 
 
 
 if DEBUG:
