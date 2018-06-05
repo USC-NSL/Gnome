@@ -4,6 +4,7 @@
 import scipy.misc as smp
 from geometry import *
 import numpy as np
+import cv2 
 
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
@@ -80,6 +81,43 @@ def save_image(imgname, voxels, mode, para=[]):
 		for voxel in voxels[planeId]:
 			drawer.draw(voxel.azi, voxel.ele, get_color(planeId, voxel, mode, para))	
 	drawer.save_img()
+
+
+def plot_map(fname, voxels):
+	min_x, max_x = 99999, -99999
+	min_y, max_y = 99999, -99999
+
+	for pid in voxels: 
+		for v in voxels[pid]:
+			x = v.pos.x
+			y = v.pos.y
+			if x > max_x:
+				max_x = x + 1
+			if x < min_x:
+				min_x = x - 1
+			if y > max_y:
+				max_y = y + 1
+			if y < min_y:
+				min_y = y - 1
+
+	min_x = max(-100, min_x)
+	min_y = max(-100, min_y)
+	max_x = min(100, max_x)
+	max_y = min(100, max_y)
+
+	wid, hei = 200, 200
+	print('voxel range %s' % `[min_x,min_y,max_x,max_y]`)
+	img = np.zeros((hei, wid, 3), np.uint8)
+
+	for pid in voxels:	
+		for v in voxels[pid]:
+			if v.pos.y > max_y or v.pos.y < min_y or v.pos.x > max_x or v.pos.x < min_x:
+				continue 
+
+			img[hei - int(v.pos.y - min_y) - 1, int(v.pos.x - min_x)] = colors[pid % len(colors)]
+
+	cv2.circle(img, (hei - int(0 - min_y) - 1, int(0 - min_x)), 2, (0,255,255), 1)
+	cv2.imwrite(fname, img)
 
 
 def add_point(imgname, pos, pos_type='azel', color='w', marker='*', markersize=15, text=''):

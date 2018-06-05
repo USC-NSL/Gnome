@@ -108,8 +108,8 @@ def run(candidate_file):
 			continue 
 		
 		pos_offset = geometry.relative_xy(map(float, [lat, lon]), map(float, [lat_sv, lon_sv]))	
-		print('offset')
-		print(pos_offset)
+		# print('offset')
+		# print(pos_offset)
 		model = offset_model(model, pos_offset)
 
 		for azi in range(0, 360):

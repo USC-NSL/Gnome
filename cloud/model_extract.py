@@ -76,6 +76,8 @@ def add_dict(k,v,d):
 def to_pts(mapWidth, mapHeight, depthmapIndices, depthmapPlanes, rotation=0):
 	voxels = {}
 	planes = {}
+	max_height = 0
+	min_dist = 1
 	for wid in range(mapWidth):
 		for hei in range(mapHeight):
 			planeId = depthmapIndices[hei * mapWidth + wid]
@@ -83,30 +85,34 @@ def to_pts(mapWidth, mapHeight, depthmapIndices, depthmapPlanes, rotation=0):
 				continue
 
 			rad_azimuth = float(wid) / float(mapWidth - 1) * TWO_PI
+			rad_azimuth += float(360 - rotation) / TWO_PI
+			rad_azimuth %= TWO_PI
 			rad_elevation = float(mapHeight / 2 - hei) / float(mapHeight - 1) * PI
 			pos_x, pos_y, pos_z = to_unit_xyz(rad_azimuth, rad_elevation)
+
 			pos = Point3D(pos_x, pos_y, pos_z)
 
 			plane = depthmapPlanes[planeId]
 			if abs(plane.z) > VERTICAL_THRES:		# ignore ground planes
 				continue 
 
-													# add rotation to plane
-			plane_azi, plane_ele = to_azi_ele(plane.x, plane.y, plane.z)
-			plane_azi += rotation * TWO_PI / 360.
-			plane_azi = plane_azi % TWO_PI
-			plane.x, plane.y, _ = to_unit_xyz(plane_azi, plane_ele)
-
 			dist = plane.d / (pos.x*plane.x + pos.y*plane.y + pos.z*plane.z) 
+			if dist < min_dist:
+				min_dist = dist
+
 			pos.multiply(dist)
+			if pos.z > max_height:
+				max_height = pos.z
 													# add rotation to voxels 
 			add_dict(planeId, Voxel(int((wid + rotation * WIDTH / 360.) % WIDTH), hei, pos), voxels)
 			planes[planeId] = plane
 
+	print('max height %d' % max_height)
+	print('min dist %d' % min_dist)
 	return voxels, planes
 
 
-def process_depth(data):					# process raw data 
+def process_depth(data, rotation):					# process raw data 
 	print('parsing data')
 	
 	data += '=' * ((4 - len(data) % 4) % 4)
@@ -151,7 +157,10 @@ def process_depth(data):					# process raw data
 	for i in range(panoIndicesOffset + mapWidth * mapHeight, len(depth_map), 16):
 		depthmapPlanes.append(DepthMapPlane(depth_map[i : i + 16]))
 
-	return to_pts(mapWidth, mapHeight, depthmapIndices, depthmapPlanes)
+	# for p in depthmapPlanes:
+	# 	print p.all()
+
+	return to_pts(mapWidth, mapHeight, depthmapIndices, depthmapPlanes, rotation)
 	
 
 def convex_hull(voxels):			# find convex hull of planes 
@@ -218,7 +227,7 @@ def summarize_plane(voxels):
 			visited_azi.append(v.azi)
 
 	if min_azi == 0 and max_azi == WIDTH - 1:
-		print('Cross-image plane..')
+		# print('Cross-image plane..')
 		min_point, max_point = None, None
 		
 		visited_azi.sort()
@@ -245,15 +254,18 @@ def summarize_plane(voxels):
 
 
 def read_model(fpath):
-	model_raw = open(fpath, 'r').read().splitlines()[1]
-	voxels, _ = process_depth(model_raw)
+	rotation, model_raw = open(fpath, 'r').read().splitlines()
+	voxels, _ = process_depth(model_raw, float(rotation))
+	model_plot.plot_map(fpath + '_v.png', voxels)
 	model_plot.save_image(fpath + '.png', voxels, 'planes') 
+
 	res = {}
 	for pid in voxels:
 		if len(voxels[pid]) < MIN_SURFACE_SIZE:
 			continue
 		edges, height = summarize_plane(voxels[pid])
 		res[pid] = {'edges': edges, 'height': height}
+	# print(res)
 	return res 
 
 
