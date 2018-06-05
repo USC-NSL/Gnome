@@ -247,7 +247,8 @@ def summarize_plane(voxels):
 def read_model(fpath):
 	model_raw = open(fpath, 'r').read().splitlines()[1]
 	voxels, _ = process_depth(model_raw)
-	res = []
+	model_plot.save_image(fpath + '.png', voxels, 'planes') 
+	res = {}
 	for pid in voxels:
 		if len(voxels[pid]) < MIN_SURFACE_SIZE:
 			continue

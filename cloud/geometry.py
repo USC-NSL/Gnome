@@ -117,17 +117,103 @@ def precision(f, n=1):	# fix the precision of float
 def ray_intersect(line, azi, origin=[0,0]):
 	# point: [x,y]
 	# line: [point, point]
-	pass		# TODO 
+	x, y, _ = to_unit_xyz(float(azi) * PI / 180.)
+
+	ray = [origin, [origin[0] + x, origin[1] + y]]
+	xi, yi, has_int, _, _ = intersectLines(line[0], line[1], ray[0], ray[1])
+	if not has_int:
+		return []
+
+	if xi > min(line[0][0], line[1][0]) and xi < max(line[0][0], line[1][0]) \
+		and yi > min(line[0][1], line[1][1]) and yi < max(line[0][1], line[1][1]) \
+		and ((x == 0 or (xi - origin[0])/x > 0) and (y == 0 or (yi - origin[1])/y > 0)):
+		return [xi, yi]
+
+	return []	
+
+
+def line_para(line):
+	# [p1, p2] -> y = ax + c
+	p1, p2 = line
+	if p1[0] == p2[0]:
+		return None, None
+	a = float(p2[1] - p1[1]) / float(p2[0] - p1[0])
+	c = float(p1[1]) - a * p1[0]
+	return a, c
 
 
 def mirror_point(line, point):
 	# point: [x,y]
 	# line: [point, point]
-	pass		# TODO 
+	x, y = map(float, point)
+	if line[0][0] == line[1][0]:	# vertical line 
+		return [2 * line[0][0] - x, y]
+	a, c = line_para(line)
+	d = (x + (y - c) * a) / (1 + a * a)
+	return [2 * d - x, 2 * d * a - y + 2 * c]
 
 
 def dist2d(p1, p2):
 	return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+
+
+def intersectLines( pt1, pt2, ptA, ptB ): 
+    """ this returns the intersection of Line(pt1,pt2) and Line(ptA,ptB)
+        
+        returns a tuple: (xi, yi, valid, r, s), where
+        (xi, yi) is the intersection
+        r is the scalar multiple such that (xi,yi) = pt1 + r*(pt2-pt1)
+        s is the scalar multiple such that (xi,yi) = pt1 + s*(ptB-ptA)
+            valid == 0 if there are 0 or inf. intersections (invalid)
+            valid == 1 if it has a unique intersection ON the segment    """
+
+    DET_TOLERANCE = 0.000001
+
+    # the first line is pt1 + r*(pt2-pt1)
+    # in component form:
+    x1, y1 = pt1;   x2, y2 = pt2
+    dx1 = x2 - x1;  dy1 = y2 - y1
+
+    # the second line is ptA + s*(ptB-ptA)
+    x, y = ptA;   xB, yB = ptB;
+    dx = xB - x;  dy = yB - y;
+
+    # we need to find the (typically unique) values of r and s
+    # that will satisfy
+    #
+    # (x1, y1) + r(dx1, dy1) = (x, y) + s(dx, dy)
+    #
+    # which is the same as
+    #
+    #    [ dx1  -dx ][ r ] = [ x-x1 ]
+    #    [ dy1  -dy ][ s ] = [ y-y1 ]
+    #
+    # whose solution is
+    #
+    #    [ r ] = _1_  [  -dy   dx ] [ x-x1 ]
+    #    [ s ] = DET  [ -dy1  dx1 ] [ y-y1 ]
+    #
+    # where DET = (-dx1 * dy + dy1 * dx)
+    #
+    # if DET is too small, they're parallel
+    #
+    DET = (-dx1 * dy + dy1 * dx)
+
+    if math.fabs(DET) < DET_TOLERANCE: return (0,0,0,0,0)
+
+    # now, the determinant should be OK
+    DETinv = 1.0/DET
+
+    # find the scalar amount along the "self" segment
+    r = DETinv * (-dy  * (x-x1) +  dx * (y-y1))
+
+    # find the scalar amount along the input line
+    s = DETinv * (-dy1 * (x-x1) + dx1 * (y-y1))
+
+    # return the average of the two descriptions
+    xi = (x1 + r*dx1 + x + s*dx)/2.0
+    yi = (y1 + r*dy1 + y + s*dy)/2.0
+    return ( xi, yi, 1, r, s )
 
 
 ###########################

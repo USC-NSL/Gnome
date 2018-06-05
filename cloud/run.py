@@ -23,6 +23,7 @@ if __name__ == '__main__':
 	# candidates.run(model_file)
 	
 	print('====== computing path inflation ======')
-	path_inflation.run(candidates_file)
+	print('This part is slow, you can split the candidate file and use multi-processing to speedup')
+	path_inflation.run(candidates_file)	
 	
 	print('done')

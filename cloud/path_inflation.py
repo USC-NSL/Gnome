@@ -12,7 +12,7 @@ model_dir = 'models/'
 model_cache_size = 20
 
 
-def blocking(p, ele, azi, origin=[0,0])
+def blocking(p, ele, azi, origin=[0,0]):
 	point1, point2 = p['edges']
 	height = p['height']
 
@@ -41,7 +41,8 @@ def inflation(model, azi, ele):
 	for plane in model:
 		point1, point2 = model[plane]['edges']
 		mirror = geometry.mirror_point([point1, point2], [0,0])
-		origin_mirror_inter = geometry.ray_intersect([point1, point2], mirror)
+		mirror_azi, _ = geometry.to_azi_ele(mirror[0], mirror[1])
+		origin_mirror_inter = geometry.ray_intersect([point1, point2], mirror_azi)
 		if not origin_mirror_inter:
 			continue
 
@@ -49,7 +50,7 @@ def inflation(model, azi, ele):
 		for plane2 in model:
 			if plane2 == plane:
 				continue 
-			if blocking(model[plane2], ele, azi):
+			if blocking(model[plane2], ele, azi, mirror):
 				blocked_other = True
 				break
 
@@ -99,6 +100,7 @@ def run(candidate_file):
 	inflation_wrapper = support.Wrapper(res_path)
 	model_cache = {}
 	fin = open(candidate_file, 'r').readlines()
+
 	for line in fin:
 		lat, lon, lat_sv, lon_sv = line.strip().split(',')
 		model = load_model(lat_sv, lon_sv, model_cache)
@@ -106,16 +108,18 @@ def run(candidate_file):
 			continue 
 		
 		pos_offset = geometry.relative_xy(map(float, [lat, lon]), map(float, [lat_sv, lon_sv]))	
+		print('offset')
+		print(pos_offset)
 		model = offset_model(model, pos_offset)
 
 		for azi in range(0, 360):
-			for ele in range(20, 80):
+			for ele in range(1, 80):
 				los_deg = los_degree(model, azi, ele)
 				if los_deg:
 					inflation_wrapper.add(	float(lat), float(lon), azi, ele,
-											[los_deg, inflation(model, azi, ele)]
+											inflation(model, azi, ele)
 										)
-		break # TODO 
+		break 
 
 	inflation_wrapper.output()
 	print('done')

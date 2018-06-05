@@ -75,4 +75,5 @@ class Wrapper:
 	def output(self):
 		print('saving model...')
 		np.save(open(self.fname, 'w'), self.data)
+		# pickle.dump(self.data, open(self.fname, 'w'))
 		print('done')
