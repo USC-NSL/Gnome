@@ -1,0 +1,1 @@
+This is the Phython version of Gnome mobile. You can run it using [QPython](https://www.qpython.com/) on Android. 

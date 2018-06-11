@@ -44,8 +44,6 @@ WIDTH = 512
 HEIGHT = 256
 VERTICAL_THRES = 0.7
 
-DEBUG = False 
-
 
 def download(ll, data_dir):				# download depth info from google 
 	ll_str = ll_to_str(ll)
@@ -269,19 +267,13 @@ def read_model(fpath):
 	return res 
 
 
-if DEBUG:
-	depth_ll = [34.0482559,-118.2574249]
-	dst_dir = 'res/'
-
-	voxels, planes, hulls = run(depth_ll, dst_dir, rotation=38.89)	# extract depth info and planes 
-	imgname = dst_dir + `depth_ll[0]` + '_' + `depth_ll[1]` + '.bmp' 	# create the image 
+if __name__ == '__main__':
+	dst_dir = 'temp/'
+	if not os.path.exists(dst_dir):
+		os.makedirs(dst_dir)
+	_ = download([sys.argv[1], sys.argv[2]], dst_dir)
+	rotation, model_raw = open(dst_dir + sys.argv[1] + ',' + sys.argv[2] + '_b64.txt', 'r').read().splitlines()
+	voxels, _ = process_depth(model_raw, 0)
+	imgname = dst_dir + sys.argv[1] + '_' + sys.argv[1] + '.bmp' 	# create the image 
 	print(imgname)
 	model_plot.save_image(imgname, voxels, 'planes') 
-	model_plot.load_img(imgname)
-
-	for plane in hulls:													# show the planes
-		# raise_height(hulls[plane], 12.)
-		print('plane %d' % plane)
-		# model_plot.load_img(imgname)
-		model_plot.add_hull(imgname, hulls[plane])
-	model_plot.show_img()

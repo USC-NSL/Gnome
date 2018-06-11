@@ -1,5 +1,5 @@
 # Gnome
-The code for the paper "Gnome: A Practical Approach to NLOS Mitigation for GPS Positioning in Smartphones".
+This is the basic version of the implementation of "Gnome: A Practical Approach to NLOS Mitigation for GPS Positioning in Smartphones". Some functions are not optimized. We will keep updating the repo.
 
 ## Requirement
 - Python 2.7.x
@@ -9,6 +9,9 @@ The code for the paper "Gnome: A Practical Approach to NLOS Mitigation for GPS P
 ## Code Structure 
 - `cloud/`: Cloud part of Gnome. It downloads data from Google Street View in the specified area, and compute GPS path inflation. 
 - `mobile/`: Mobile part of Gnome. It takes input from Android GPS metadata and the path inflation model from cloud, and computes the adjusted location. 
+
+## Workflow
+![alt text](workflow.png "Workflow of Gnome")
 
 ## Run Cloud
 Go to `cloud/` dir and run `python run.py lat_bottom lon_left lat_top lon_right `. The last four parameters specifies the region where Gnome generates the path inflation model. The output is written in `inflation.pkl`
@@ -23,10 +26,12 @@ from mobile.main import Gnome
 from mobile.meta import GPSmeta
 
 gnome = Gnome(path_to_inflation_model)
+gnome_meta = GPSmeta()					# input path to gnss logger file (optional)
 
 while reading_gps:
-	gps_meta = GPSmeta(your_gps_meta_data)
-	position_adjusted = Gnome.update(gps_meta)
+	position_adjusted = Gnome.update(your_own_data)		# pass data from your own app
+	position_adjusted = Gnome.update(gnome_meta.read())	# pass data from gnss logger file 
+	 
 ```
 
 - `Gnome` is the main object to compute the new location. Use its `update` function to get new location reading
