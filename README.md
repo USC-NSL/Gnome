@@ -14,7 +14,7 @@ This is the basic version of the implementation of "Gnome: A Practical Approach 
 ![alt text](workflow.png "Workflow of Gnome")
 
 ## Run Cloud
-Go to `cloud/` dir and run `python run.py lat_bottom lon_left lat_top lon_right `. The last four parameters specifies the region where Gnome generates the path inflation model. The output is written in `inflation.pkl`
+Go to `cloud/` dir, fill `alps/config/query_google_key.info` with your own google key. Then, run `python run.py lat_bottom lon_left lat_top lon_right `. The last four parameters specifies the region where Gnome generates the path inflation model. The output is written in `inflation.pkl`
 
 Sample command: `python run.py 34.045175 -118.260346 34.049438 -118.256356`
 

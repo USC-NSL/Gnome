@@ -1,6 +1,18 @@
 import pickle
 import gzip
 import numpy as np
+import time 
+
+sv_url_head = 'https://maps.googleapis.com/maps/api/streetview?'
+sv_url_para = 'size=%dx%d&fov=%d&location=%s,%s&heading=%f&pitch=%f'
+
+
+def download_single_sv(lat, lon, heading, pitch, fname, resolution=600, fov=120):
+    url = url_head + (url_para % (resolution, resolution, fov, lat, lon, heading, pitch))
+    fjpg = open(fname, "wb")
+    fjpg.write(urllib2.urlopen(url).read())
+    fjpg.close()
+    time.sleep(0.1)
 
 
 def l2key(l):

@@ -49,30 +49,3 @@ class Gnome:
 				self.localizer.add_candidate(cand_lat_body, cand_lon_body, data)
 
 		return self.localizer.update() 
-
-
-
-
-'''
-height = 181
-width = 361
-model = np.load(open(sys.argv[1], 'r')).item()
-img = np.zeros((height,width,3), np.uint8)
-# print(model)
-
-max_ele = 0
-for lat1 in model:
-	for lon1 in model[lat1]:
-		for lat2 in model[lat1][lon1]:
-			for lon2 in model[lat1][lon1][lat2]:
-				for azi in model[lat1][lon1][lat2][lon2]:
-					for ele in model[lat1][lon1][lat2][lon2][azi]:
-						img[height / 2 - ele, azi] = [255,255,255]
-						if ele > max_ele:
-							max_ele = ele
-
-						
-print(max_ele)
-cv2.imwrite('res.png', img)
-print('done')
-'''
