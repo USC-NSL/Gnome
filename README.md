@@ -1,5 +1,5 @@
 # Gnome
-This is the basic version of the implementation of "Gnome: A Practical Approach to NLOS Mitigation for GPS Positioning in Smartphones". Some functions are not optimized. We will keep updating the repo.
+This is the basic version of "Gnome: A Practical Approach to NLOS Mitigation for GPS Positioning in Smartphones". Some functions are not optimized. We will keep updating the repo.
 
 ## Requirement
 - Python 2.7.x
@@ -14,9 +14,8 @@ This is the basic version of the implementation of "Gnome: A Practical Approach 
 ![alt text](workflow.png "Workflow of Gnome")
 
 ## Run Cloud
-Go to `cloud/` dir, fill `alps/config/query_google_key.info` with your own google key. Then, run `python run.py lat_bottom lon_left lat_top lon_right `. The last four parameters specifies the region where Gnome generates the path inflation model. The output is written in `inflation.pkl`
-
-Sample command: `python run.py 34.045175 -118.260346 34.049438 -118.256356`
+- Go to `cloud/` dir, fill `alps/config/query_google_key.info` with your own google key. 
+- Run `python run.py lat_bottom lon_left lat_top lon_right`. The last four parameters specifies the region where Gnome generates the path inflation model. The output is written in `inflation.pkl` *Sample command: `python run.py 34.045175 -118.260346 34.049438 -118.256356`*
 
 ## Run Mobile
 The mobile part of Gnome is running as a python library. Your code should include the `Gnome` class in `mobile/main.py` and `GPSmeta` in `mobile.meta.py`. Here is the example:
